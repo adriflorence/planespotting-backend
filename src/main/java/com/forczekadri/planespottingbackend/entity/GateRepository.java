@@ -4,13 +4,12 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
-import java.time.LocalDateTime;
 import java.util.Collection;
 
 @Repository
-public interface FlightRepository extends CrudRepository<Flight, Long> {
+public interface GateRepository extends CrudRepository<Gate, Long> {
 
-    @Query("SELECT f FROM Flight f WHERE f.time > ?1 ORDER BY f.id ASC")
-    Collection<Flight> getAllCurrentFlights(LocalDateTime time);
+    @Query("SELECT g FROM Gate g WHERE g.in_use = false")
+    Collection<Gate> getAllFreeGates();
 
 }

@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS airport (
+CREATE TABLE IF NOT EXISTS airports (
     id INTEGER,
     name VARCHAR(255),
     city VARCHAR(255),

@@ -1,8 +1,12 @@
 package com.forczekadri.planespottingbackend.entity;
 
+import com.forczekadri.planespottingbackend.service.FakeTime;
+
 import javax.persistence.*;
 import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.util.Random;
 
 @Entity
@@ -35,7 +39,7 @@ public class Flight {
     private Gate gate;
 
     @Column(name="status")
-    @Size(max=10)
+    @Size(max=20)
     private String status;
 
     @Column
@@ -45,14 +49,14 @@ public class Flight {
 
     }
 
-    public Flight(Airport airport) {
+    public Flight(Airport airport, LocalDateTime time, Gate gate) {
         this.airline = generateAirlineName(airport);
         this.flightCode = generateFlightCode(airport);
         this.direction = generateDirection();
         this.airport = airport;
         this.gate = gate;
         this.status = "On time";
-        this.time = generateTime();
+        this.time = time;
     }
 
     private String generateAirlineName(Airport airport){
@@ -94,11 +98,6 @@ public class Flight {
         String[] direction = {"inbound", "outbound"};
         Random rand = new Random();
         return direction[rand.nextInt(2)];
-    }
-
-    private LocalDateTime generateTime() {
-        LocalDateTime time = LocalDateTime.now().plusMinutes(10);
-        return time.plusMinutes(10);
     }
 
     @Override
