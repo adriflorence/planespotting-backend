@@ -31,6 +31,8 @@ public class SchedulerService {
     public void scheduleFlights() {
         ZoneOffset offset = ZoneId.of("Europe/London").getRules().getOffset(fakeTime.instant());
         LocalDateTime localDateTime = LocalDateTime.ofInstant(fakeTime.instant(), offset);
+        // round up to the nearest multiple of five minutes
+        localDateTime = localDateTime.plusMinutes((65-localDateTime.getMinute())%5);
 
         Airport airport = getRandomAirport();
         Gate gate = getRandomGate();
@@ -45,25 +47,37 @@ public class SchedulerService {
         Collection<Flight> allCurrentFlights = flightRepository.getAllCurrentFlights(currentTime);
         for (Flight flight : allCurrentFlights) {
             long minutes = ChronoUnit.MINUTES.between(currentTime, flight.getTime());
-            if(minutes < 40 && minutes > 30) flight.setStatus("Go to Gate!");
-            if(minutes <= 30) flight.setStatus("Boarding");
-            if(minutes == 0) {
-                flight.setStatus("Departed");
-                Gate gate = flight.getGate();
-                gate.setIn_use(false);
-                gateRepository.save(gate);
+            if(flight.getDirection().equals("outbound")){
+                if(minutes < 40 && minutes > 30) flight.setStatus("Go to Gate!");
+                if(minutes <= 30) flight.setStatus("Boarding");
+                if(minutes == 2) {
+                    flight.setStatus("Departed");
+                    Gate gate = flight.getGate();
+                    gate.setIn_use(false);
+                    gateRepository.save(gate);
+                }
+            } else {
+                if(minutes == 2) {
+                    flight.setStatus("Landed");
+                    Gate gate = flight.getGate();
+                    gate.setIn_use(false);
+                    gateRepository.save(gate);
+                }
             }
+
             flightRepository.save(flight);
+            // make sure to check direction for logic
+            // inbound approaching / landed etc
+            // outbound go to gate, boarding, final call etc
         }
     }
 
-    public Airport getRandomAirport(){
+    private Airport getRandomAirport(){
         List<Airport> airports = (List<Airport>) airportRepository.findAll(); // repo returns iterable type
-        Airport airport = airports.get(new Random().nextInt(airports.size()));
-        return airport;
+        return airports.get(new Random().nextInt(airports.size()));
     }
 
-    public Gate getRandomGate(){
+    private Gate getRandomGate(){
         List<Gate> gates = (List<Gate>) gateRepository.getAllFreeGates();
         Gate gate = gates.get(new Random().nextInt(gates.size()));
         gate.setIn_use(true);
