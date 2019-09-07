@@ -29,4 +29,12 @@ public class Gate {
     public void setIn_use(boolean in_use) {
         this.in_use = in_use;
     }
+
+    @Override
+    public String toString() {
+        return "Gate{" +
+                "id=" + id +
+                ", in_use=" + in_use +
+                '}';
+    }
 }

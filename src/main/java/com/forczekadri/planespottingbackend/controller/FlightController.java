@@ -24,7 +24,11 @@ public class FlightController {
     public Iterable<Flight> getAllFlights(){
         ZoneOffset offset = ZoneId.of("Europe/London").getRules().getOffset(fakeTime.instant());
         LocalDateTime currentTime = LocalDateTime.ofInstant(fakeTime.instant(), offset);
-        return flightRepository.getAllCurrentFlights(currentTime);
+
+        // currentTime - 10
+        // allows to see and manipulate flight info up to 10 minutes after arrival/departure
+        LocalDateTime referenceTime = currentTime.minusMinutes(10);
+        return flightRepository.getAllCurrentFlights(referenceTime);
     }
 
     public FlightController(FlightRepository flightRepository, FakeTime fakeTime) {

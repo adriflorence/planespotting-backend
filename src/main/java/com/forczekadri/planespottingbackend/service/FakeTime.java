@@ -34,6 +34,6 @@ public class FakeTime extends Clock {
         // Difference between the starting point of this clock and 'now'.
         long delta = nowSeconds - beginSeconds;
         // Creates a datetime that is in the future.
-        return begin.plusSeconds(delta * 10).toInstant();
+        return begin.plusSeconds(delta * 60).toInstant(); // 10
     }
 }
